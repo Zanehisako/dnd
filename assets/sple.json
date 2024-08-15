@@ -1,0 +1,23 @@
+[
+    {
+        "name": "Fireball",
+        "type": "Offensive",
+        "magic": "Fire",
+        "detail": "A powerful fire attack.",
+        "weight": "5",
+        "texts": [
+            "Deals damage over time.",
+            "High area of effect."
+        ]
+    },
+    {
+        "name": "Ice Shard",
+        "type": "Defensive",
+        "magic": "Ice",
+        "detail": "A chilling defensive spell.",
+        "texts": [
+            "Reduces damage from fire attacks.",
+            "Can freeze enemies."
+        ]
+    }
+]
