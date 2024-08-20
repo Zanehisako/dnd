@@ -1,6 +1,7 @@
 use pdf_forms::Form;
 use serde::{Deserialize, Serialize};
-use std::{/*borrow::Cow,*/ fs::File, io::BufReader};
+use std::{/*borrow::Cow,*/ borrow::Borrow, fs::File, io::BufReader, str::FromStr};
+use widget::pick_list;
 
 use iced::*;
 use nfd::Response;
@@ -53,10 +54,31 @@ struct Races {
     domains: Option<String>,
     weight: Option<String>,
 }
+#[derive(Debug, Clone, PartialEq, Eq, Copy)]
+pub enum Sex {
+    Male,
+    Female,
+}
+impl ToString for Sex {
+    fn to_string(&self) -> String {
+        match self {
+            Self::Male => String::from_str("Male").unwrap(),
+            Self::Female => String::from_str("Female").unwrap(),
+        }
+    }
+}
+impl Borrow<str> for Sex {
+    fn borrow(&self) -> &str {
+        match self {
+            Self::Male => "Male",
+            Self::Female => "female",
+        }
+    }
+}
 
 #[derive(Default)]
 struct CharacterInfo {
-    value: i32,
+    sex: Option<Sex>,
     file_location: String,
 }
 #[derive(Debug, Clone)]
@@ -64,17 +86,29 @@ pub enum Message {
     OpenFile,
     Save,
     Charactername(String),
+    ChosingSex(Sex),
 }
 impl CharacterInfo {
-    pub fn view(&self) -> iced::widget::Row<Message> {
+    pub fn view(&self) -> iced::widget::Column<Message> {
         // We use a column: a simple vertical layout
         let character_name: &str = "";
-        let row = iced::widget::Row::new().push(
+        let row = iced::widget::row!(
+            iced::widget::text("Character name"),
             iced::widget::TextInput::new("enter character name", &character_name)
-                .on_input(Message::Charactername),
-        );
-
-        row
+                .on_input(Message::Charactername)
+        )
+        .spacing(20)
+        .padding(50);
+        let sex_options = vec![Sex::Male, Sex::Female];
+        let sex_picklist: iced::widget::PickList<Sex, Vec<Sex>, &Sex, Message> =
+            iced::widget::PickList::new(sex_options, self.sex.as_ref(), Message::ChosingSex)
+                .placeholder("select sex");
+        let row2: iced::widget::Row<Message> =
+            iced::widget::row!(iced::widget::text("sex"), sex_picklist)
+                .spacing(20)
+                .padding(50);
+        let col = iced::widget::column!(row, row2);
+        col
     }
     pub fn update(&mut self, message: Message) {
         match message {
@@ -94,6 +128,9 @@ impl CharacterInfo {
                 println!("finished saving the file");
             }
             Message::Charactername(string) => {
+                println!("{:?}", string);
+            }
+            Message::ChosingSex(string) => {
                 println!("{:?}", string);
             }
         }
