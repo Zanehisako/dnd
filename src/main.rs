@@ -1,9 +1,7 @@
 use pdf_forms::Form;
 use serde::{Deserialize, Serialize};
-use std::{/*borrow::Cow,*/ borrow::Borrow, fs::File, io::BufReader, str::FromStr};
-use widget::pick_list;
+use std::{/*borrow::Cow,*/ borrow::Borrow, fs::File, io::BufReader, str::FromStr, u8};
 
-use iced::*;
 use nfd::Response;
 //use quick_xml::{events::Event, reader::Reader};
 
@@ -78,8 +76,11 @@ impl Borrow<str> for Sex {
 
 #[derive(Default)]
 struct CharacterInfo {
+    level: Option<u8>,
     sex: Option<Sex>,
     file_location: String,
+    feats: bool,
+    multiclassing: bool,
 }
 #[derive(Debug, Clone)]
 pub enum Message {
@@ -87,6 +88,9 @@ pub enum Message {
     Save,
     Charactername(String),
     ChosingSex(Sex),
+    ChosingLevel(u8),
+    Tooglefeat(bool),
+    ToogleMulticlassing(bool),
 }
 impl CharacterInfo {
     pub fn view(&self) -> iced::widget::Column<Message> {
@@ -102,12 +106,35 @@ impl CharacterInfo {
         let sex_options = vec![Sex::Male, Sex::Female];
         let sex_picklist: iced::widget::PickList<Sex, Vec<Sex>, &Sex, Message> =
             iced::widget::PickList::new(sex_options, self.sex.as_ref(), Message::ChosingSex)
-                .placeholder("select sex");
+                .placeholder(
+                    self.sex
+                        .map_or_else(|| "Select sex".to_string(), |s| s.to_string()),
+                );
         let row2: iced::widget::Row<Message> =
             iced::widget::row!(iced::widget::text("sex"), sex_picklist)
                 .spacing(20)
                 .padding(50);
-        let col = iced::widget::column!(row, row2);
+        let levels: Vec<u8> = (1..21).map(|u| u as u8).collect();
+        let starting_level: iced::widget::PickList<u8, Vec<u8>, u8, Message> =
+            iced::widget::PickList::new(levels, self.level, Message::ChosingLevel).placeholder(
+                self.level
+                    .map_or_else(|| "Select level".to_string(), |s| s.to_string()),
+            );
+        let row3: iced::widget::Row<Message> =
+            iced::widget::row!(iced::widget::text("Starting level"), starting_level)
+                .spacing(20)
+                .padding(50);
+        let feat_toggle: iced::widget::Checkbox<Message> =
+            iced::widget::checkbox("feats", self.feats).on_toggle(Message::Tooglefeat);
+        let row4: iced::widget::Row<Message> =
+            iced::widget::row!(feat_toggle).spacing(20).padding(50);
+        let multiclassing_toggle: iced::widget::Checkbox<Message> =
+            iced::widget::checkbox("multiclassing", self.multiclassing)
+                .on_toggle(Message::ToogleMulticlassing);
+        let row5: iced::widget::Row<Message> = iced::widget::row!(multiclassing_toggle)
+            .spacing(20)
+            .padding(50);
+        let col = iced::widget::column!(row, row2, row3, row4, row5);
         col
     }
     pub fn update(&mut self, message: Message) {
@@ -130,8 +157,19 @@ impl CharacterInfo {
             Message::Charactername(string) => {
                 println!("{:?}", string);
             }
-            Message::ChosingSex(string) => {
-                println!("{:?}", string);
+            Message::ChosingSex(newsex) => {
+                self.sex = Option::from(newsex);
+                println!("{:?}", newsex);
+            }
+            Message::ChosingLevel(level) => {
+                self.level = Option::from(level);
+                println!("{:?}", level);
+            }
+            Message::Tooglefeat(bool) => {
+                self.feats = bool;
+            }
+            Message::ToogleMulticlassing(bool) => {
+                self.multiclassing = bool;
             }
         }
     }
