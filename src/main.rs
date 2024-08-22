@@ -1,9 +1,17 @@
+mod main1;
+use iced::widget::{button, text, text_input};
+use nfd::Response;
 use pdf_forms::Form;
 use serde::{Deserialize, Serialize};
 use std::{/*borrow::Cow,*/ borrow::Borrow, fs::File, io::BufReader, str::FromStr, u8};
-
-use nfd::Response;
 //use quick_xml::{events::Event, reader::Reader};
+
+#[derive(Debug)]
+struct Page {}
+#[derive(Debug)]
+struct MainPage {
+    current_Page: Page,
+}
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Spell {
@@ -76,6 +84,7 @@ impl Borrow<str> for Sex {
 
 #[derive(Default)]
 struct CharacterInfo {
+    name: String,
     level: Option<u8>,
     sex: Option<Sex>,
     file_location: String,
@@ -91,15 +100,14 @@ pub enum Message {
     ChosingLevel(u8),
     Tooglefeat(bool),
     ToogleMulticlassing(bool),
+    NextPage,
 }
 impl CharacterInfo {
     pub fn view(&self) -> iced::widget::Column<Message> {
         // We use a column: a simple vertical layout
-        let character_name: &str = "";
         let row = iced::widget::row!(
             iced::widget::text("Character name"),
-            iced::widget::TextInput::new("enter character name", &character_name)
-                .on_input(Message::Charactername)
+            iced::widget::TextInput::new("Enter name", &self.name).on_input(Message::Charactername)
         )
         .spacing(20)
         .padding(50);
@@ -134,7 +142,11 @@ impl CharacterInfo {
         let row5: iced::widget::Row<Message> = iced::widget::row!(multiclassing_toggle)
             .spacing(20)
             .padding(50);
-        let col = iced::widget::column!(row, row2, row3, row4, row5);
+        let row6: iced::widget::Row<Message> =
+            iced::widget::row!(button("Next Page").on_press(Message::NextPage))
+                .spacing(20)
+                .padding(50);
+        let col = iced::widget::column!(row, row2, row3, row4, row5, row6);
         col
     }
     pub fn update(&mut self, message: Message) {
@@ -155,7 +167,7 @@ impl CharacterInfo {
                 println!("finished saving the file");
             }
             Message::Charactername(string) => {
-                println!("{:?}", string);
+                self.name = string;
             }
             Message::ChosingSex(newsex) => {
                 self.sex = Option::from(newsex);
@@ -171,6 +183,7 @@ impl CharacterInfo {
             Message::ToogleMulticlassing(bool) => {
                 self.multiclassing = bool;
             }
+            Message::NextPage => {}
         }
     }
 }
@@ -185,7 +198,7 @@ fn read_json(json_path: &str) {
     }
 }
 
-fn main() -> iced::Result {
+pub fn main() -> iced::Result {
     //let spells_path = "E:/Rust/dnd/assets/spells.json";
     //read_json(spells_path);
     //read_xml();
