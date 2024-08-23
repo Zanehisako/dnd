@@ -1,3 +1,4 @@
+mod RacesAndClasses;
 mod main1;
 use iced::widget::{button, text, text_input};
 use nfd::Response;
