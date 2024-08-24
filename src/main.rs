@@ -5,15 +5,16 @@ use iced::{
     widget::{button, column, container, row, text},
     Element,
 };
-
+#[derive(Default)]
 struct App {
     current_view: View,
     character_info: character_info::CharacterInfo,
     races_and_classes: races_and_classes::Races,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Default, Debug, Clone)]
 pub enum View {
+    #[default]
     Main,
     CharacterInfoPage,
     RaceAndClassPage,
@@ -39,14 +40,14 @@ impl App {
                 .view()
                 .map(Message::GoToRaceAndClassPage),
         };
-        let row: iced::widget::Row<Message> = iced::widget::row!(
-            button("Go to CharacterInfoPage").on_press(Message::GoToRaceAndClassPage())
-        );
+        let row: iced::widget::Row<Message> = iced::widget::row!(button("Go to CharacterInfoPage")
+            .on_press(Message::SwitchView(View::CharacterInfoPage)));
 
-        container(content).into()
+        container(column!(content, row)).into()
     }
     pub fn update(&mut self, message: Message) {
         match message {
+            Message::SwitchView(view) => self.current_view = view,
             Message::GoToMain => self.current_view = View::Main,
             Message::GoToCharacterInfoPage(msg) => self.character_info.update(msg),
             Message::GoToRaceAndClassPage(msg) => self.races_and_classes.update(msg),
