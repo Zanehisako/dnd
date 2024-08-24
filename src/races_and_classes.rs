@@ -7,7 +7,8 @@ struct RacePage {
     race: Races,
 }
 
-enum Message {
+#[derive(Debug, Clone)]
+pub enum Message {
     ChosingRace,
     ChosingSubRace,
     ChosingClass,
