@@ -1,7 +1,6 @@
-use iced::widget::{button, text, text_input};
 use pdf_forms::Form;
 use serde::{Deserialize, Serialize};
-use std::{/*borrow::Cow,*/ borrow::Borrow, default, fs::File, io::BufReader, str::FromStr, u8,};
+use std::{/*borrow::Cow,*/ borrow::Borrow, fs::File, io::BufReader, str::FromStr, u8};
 //use quick_xml::{events::Event, reader::Reader};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -140,11 +139,7 @@ impl CharacterInfo {
         let row5: iced::widget::Row<Message> = iced::widget::row!(multiclassing_toggle)
             .spacing(20)
             .padding(50);
-        let row6: iced::widget::Row<Message> =
-            iced::widget::row!(button("Next Page").on_press(Message::NextPage))
-                .spacing(20)
-                .padding(50);
-        let col = iced::widget::column!(row, row2, row3, row4, row5, row6);
+        let col = iced::widget::column!(row, row2, row3, row4, row5);
         col.into()
     }
     pub fn update(&mut self, message: Message) {

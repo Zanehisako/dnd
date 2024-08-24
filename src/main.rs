@@ -40,10 +40,15 @@ impl App {
                 .view()
                 .map(Message::GoToRaceAndClassPage),
         };
-        let row: iced::widget::Row<Message> = iced::widget::row!(button("Go to CharacterInfoPage")
-            .on_press(Message::SwitchView(View::CharacterInfoPage)));
+        let row: iced::widget::Row<Message> = iced::widget::row!(
+            button("Go to CharacterInfoPage")
+                .on_press(Message::SwitchView(View::CharacterInfoPage)),
+            button("Go to Main Page").on_press(Message::SwitchView(View::Main))
+        )
+        .padding(50)
+        .spacing(50);
 
-        container(column!(content, row)).into()
+        container(column!(content, row).padding(50).spacing(50)).into()
     }
     pub fn update(&mut self, message: Message) {
         match message {
