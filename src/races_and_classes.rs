@@ -16,11 +16,13 @@ pub enum Message {
 
 #[derive(Default, Debug)]
 pub struct Races {
+    name: String,
     description: String,
 }
 impl Races {
-    pub fn new() -> Self {
+    pub fn new(new_name: String) -> Self {
         Races {
+            name: new_name,
             description: String::from_str("").unwrap(),
         }
     }
