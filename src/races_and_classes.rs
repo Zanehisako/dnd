@@ -1,40 +1,80 @@
 use std::str::FromStr;
 
-use iced::{widget::column, Element};
+use iced::{
+    widget::{column, text},
+    Element,
+};
 
-#[derive(Debug)]
-struct RacePage {
-    race: Races,
+#[derive(Default, Debug)]
+pub struct RacePage {
+    race: Option<Races>,
 }
 
 #[derive(Debug, Clone)]
 pub enum Message {
-    ChosingRace,
-    ChosingSubRace,
-    ChosingClass,
+    ChosingRace(Races),
+    //ChosingSubRace,
 }
 
-#[derive(Default, Debug)]
-pub struct Races {
-    name: String,
-    description: String,
+#[derive(Debug, Clone, PartialEq, Eq, Copy)]
+pub enum Races {
+    Dwarf,
+    Elf,
+    Halfling,
+    Human,
+    Dragonborn,
+    Gnome,
+    HalfElf,
+    HalfOrc,
+    Tiefling,
 }
-impl Races {
-    pub fn new(new_name: String) -> Self {
-        Races {
-            name: new_name,
-            description: String::from_str("").unwrap(),
+
+impl ToString for Races {
+    fn to_string(&self) -> String {
+        match self {
+            Self::Dwarf => String::from_str("Dwarf").unwrap(),
+            Self::Elf => String::from_str("Elf").unwrap(),
+            Self::Halfling => String::from_str("Halfling").unwrap(),
+            Self::Human => String::from_str("Human").unwrap(),
+            Self::Dragonborn => String::from_str("Dragonborn").unwrap(),
+            Self::Gnome => String::from_str("Gnome").unwrap(),
+            Self::HalfElf => String::from_str("HalfElf").unwrap(),
+            Self::HalfOrc => String::from_str("HalfOrc").unwrap(),
+            Self::Tiefling => String::from_str("Tiefling").unwrap(),
         }
+    }
+}
+impl RacePage {
+    pub fn new() -> Self {
+        RacePage { race: Option::None }
     }
 
     pub fn view(&self) -> Element<Message> {
-        let col = column!().into();
+        let races_options = vec![
+            Races::Dwarf,
+            Races::Elf,
+            Races::Human,
+            Races::Halfling,
+            Races::Dragonborn,
+            Races::Gnome,
+            Races::HalfElf,
+            Races::HalfOrc,
+            Races::Tiefling,
+        ];
+        let race_picklist: iced::widget::PickList<Races, Vec<Races>, &Races, Message> =
+            iced::widget::PickList::new(races_options, self.race.as_ref(), Message::ChosingRace)
+                .placeholder(
+                    self.race
+                        .map_or_else(|| "chose a race".to_string(), |s| s.to_string()),
+                );
+        let col = column!(text!("Race"), race_picklist).into();
         col
     }
-    pub fn update(&mut self, message: Message) {}
-}
-#[derive(Debug)]
-pub enum Classes {
-    Variant1,
-    Variant2,
+    pub fn update(&mut self, message: Message) {
+        match message {
+            Message::ChosingRace(race) => {
+                self.race = Option::from(race);
+            }
+        }
+    }
 }

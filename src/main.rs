@@ -2,14 +2,14 @@ mod character_info;
 mod races_and_classes;
 
 use iced::{
-    widget::{button, column, container, row, text},
+    widget::{button, column, container, text},
     Element,
 };
 #[derive(Default)]
 struct App {
     current_view: View,
     character_info: character_info::CharacterInfo,
-    races_and_classes: races_and_classes::Races,
+    races_and_classes: races_and_classes::RacePage,
 }
 
 #[derive(Default, Debug, Clone)]
@@ -22,7 +22,6 @@ pub enum View {
 #[derive(Debug, Clone)]
 enum Message {
     SwitchView(View),
-    GoToMain,
     GoToCharacterInfoPage(character_info::Message),
     GoToRaceAndClassPage(races_and_classes::Message),
 }
@@ -43,7 +42,8 @@ impl App {
         let row: iced::widget::Row<Message> = iced::widget::row!(
             button("Go to CharacterInfoPage")
                 .on_press(Message::SwitchView(View::CharacterInfoPage)),
-            button("Go to Main Page").on_press(Message::SwitchView(View::Main))
+            button("Go to Main Page").on_press(Message::SwitchView(View::Main)),
+            button("Go to Races").on_press(Message::SwitchView(View::RaceAndClassPage)),
         )
         .padding(50)
         .spacing(50);
@@ -53,7 +53,6 @@ impl App {
     pub fn update(&mut self, message: Message) {
         match message {
             Message::SwitchView(view) => self.current_view = view,
-            Message::GoToMain => self.current_view = View::Main,
             Message::GoToCharacterInfoPage(msg) => self.character_info.update(msg),
             Message::GoToRaceAndClassPage(msg) => self.races_and_classes.update(msg),
         };

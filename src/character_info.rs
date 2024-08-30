@@ -1,7 +1,6 @@
 use pdf_forms::Form;
 use serde::{Deserialize, Serialize};
 use std::{/*borrow::Cow,*/ borrow::Borrow, fs::File, io::BufReader, str::FromStr, u8};
-//use quick_xml::{events::Event, reader::Reader};
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Spell {
