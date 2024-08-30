@@ -1,13 +1,17 @@
-use std::str::FromStr;
-
 use iced::{
     widget::{column, text},
     Element,
 };
+use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 
 #[derive(Default, Debug)]
 pub struct RacePage {
     race: Option<Races>,
+}
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Race {
+    content: Vec<String>,
 }
 
 #[derive(Debug, Clone)]
