@@ -171,13 +171,3 @@ impl CharacterInfo {
         }
     }
 }
-
-pub fn read_json(json_path: &str) {
-    let file = File::open(json_path).unwrap();
-    let buf = BufReader::new(file);
-
-    let spells: Vec<Spell> = serde_json::from_reader(buf).unwrap();
-    for spell in spells {
-        println!("{:?}", spell.level);
-    }
-}
