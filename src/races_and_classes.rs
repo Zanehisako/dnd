@@ -36,6 +36,77 @@ pub enum Message {
     //ChosingSubRace,
 }
 
+pub fn parse_txt(text: &str) /*-> Vec<iced::widget::Text>*/
+{
+    enum State {
+        S0,
+        S1,
+        S2,
+        S3,
+        S4,
+        S5,
+        S6,
+    }
+    let mut current_state = State::S0;
+    let mut word = String::new();
+    for c in text.chars() {
+        match current_state {
+            State::S0 => {
+                if c.is_alphanumeric() {
+                    word.push(c);
+                } else {
+                    current_state = State::S1;
+                }
+            }
+
+            State::S1 => {
+                if c.is_alphanumeric() {
+                    current_state = State::S2;
+                } else {
+                    current_state = State::S3;
+                }
+            }
+
+            State::S2 => {
+                if c.is_alphanumeric() {
+                    word.push(c);
+                } else {
+                    current_state = State::S4;
+                }
+            }
+
+            State::S3 => {
+                if c.is_alphanumeric() {
+                    word.push(c);
+                } else {
+                    current_state = State::S5;
+                }
+            }
+
+            State::S4 => {
+                current_state = State::S0;
+                println!("end");
+            }
+
+            State::S5 => {
+                if c.is_alphanumeric() {
+                    println!("Error!");
+                } else {
+                    current_state = State::S6;
+                }
+            }
+
+            State::S6 => {
+                current_state = State::S0;
+                println!("end");
+            }
+        }
+    }
+    println!("{}", word);
+    /*let parsed_txt: Vec<iced::widget::Text> = None;
+    parsed_txt*/
+}
+
 impl RacePage {
     pub fn new() -> Self {
         RacePage { race: Option::None }
@@ -64,6 +135,7 @@ impl RacePage {
     pub fn update(&mut self, message: Message) {
         match message {
             Message::ChosingRace(race) => {
+                parse_txt("**Hello**");
                 self.race = Option::from(race);
             }
         }
